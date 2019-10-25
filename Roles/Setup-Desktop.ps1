@@ -165,9 +165,9 @@ $BaseDesktopRequirements = @(
         Describe = 'Microsoft Visual C++ 2010 x64 Runtime is installed'
         Test     = { $false -or (Get-InstalledSoftware -Name 'Microsoft Visual C++ 2010*') } 
         Set      = {
-            $URI = "http://download.microsoft.com/download/5/D/8/5D8C65CB-C849-4025-8E95-C3966CAFD8AE/vcredist_x64.exe"
+            $URI = "http://download.microsoft.com/download/1/6/5/165255E7-1014-4D0A-B094-B6A430A6BFFC/vcredist_x64.exe"
             $Outfile = Join-Path "$env:SystemRoot\Temp" -ChildPath "vcredist-2010-x64.exe"
-            $UnattendedArgs = "/qb!"
+            $UnattendedArgs = "/quiet /norestart"
             
             Invoke-WebRequest -Uri $URI -OutFile $OutFile -UseBasicParsing
             Start-Process $Outfile $UnattendedArgs -Wait -PassThru | Out-Null
@@ -447,7 +447,7 @@ $MediaPlayerRequirements = @(
         }
         Set      = { 
             $Uri = (Get-VideoLanVlcPlayer | Where-Object Platform -eq 'Win64').Uri
-            $OutFile = Join-Path "$env:SystemRoot\Temp" -ChildPath "vlc-win64.exe" # Don't name it just vlc.exe
+            $OutFile = Join-Path "$env:SystemRoot\Temp" -ChildPath "vlc-win64.exe" # Don't name it just vlc.exe in C:\Windows\Temp, I don't know why.
             $UnattendedArgs = "/S" # /L=1033 sets to English, NCRC skips CRC
 
             if (Test-Path "$env:ProgramFiles\VideoLan\VLC\Uninstall.exe") { 
@@ -455,7 +455,7 @@ $MediaPlayerRequirements = @(
                 Start-Sleep -Seconds 1
             }
             if (Test-Path "${env:ProgramFiles(x86)}\VideoLan\VLC\Uninstall.exe") { 
-                Start-Process "${env:ProgramFiles(x86)}\VideoLan\VLC\Uninstall.exe" -ArgumentList '/S' -Passthru | Out-Null
+                Start-Process "${env:ProgramFiles(x86)}\VideoLan\VLC\Uninstall.exe" -ArgumentList '/S' -Wait -Passthru | Out-Null
                 Start-Sleep -Seconds 1
             }
             Invoke-WebRequest -Uri $URI -OutFile $OutFile -UseBasicParsing
@@ -490,11 +490,13 @@ $WebexRequirements = @(
         Set      = {
             $URI = "https://akamaicdn.webex.com/client/webexapp.msi"
             $OutFile = Join-Path "$env:SystemRoot\Temp" -ChildPath "webexapp.msi"
-            $UnattendedArgs = "/i $Outfile ALLUSERS=1 /qn /liewa ${env:SystemRoot}\Temp\webexapp.log"
+            $UnattendedArgs = "/i $Outfile ALLUSERS=1 AUTOOC=0 /qn /liewa ${env:SystemRoot}\Temp\webexapp.log"
 
             Invoke-WebRequest -Uri $URI -OutFile $OutFile -UseBasicParsing
             Start-Process msiexec.exe -ArgumentList $UnattendedArgs -Wait -Passthru | Out-Null
-            Start-Sleep -Seconds 1 
+            Start-Sleep -Seconds 1
+            
+            Kill-Process -Name 'webexmta.exe'
         }
     }
 )
@@ -520,13 +522,19 @@ $Java8Requirements = @(
         Set      = { 
             $URI = (Get-Java8 | Where-Object Architecture -eq 'x64').URI
             $OutFile = Join-Path "$env:SystemRoot\Temp" -ChildPath "java8.exe"
-            $UnattendedArgs = "/s REBOOT=0 SPONSORS=0 AUTOUPDATE=0"
+            $UnattendedArgs = "/s REBOOT=0 SPONSORS=0 /L ${env:SystemRoot}\Temp\java.log"
 
             Invoke-WebRequest -Uri $URI -OutFile $OutFile -UseBasicParsing
             Start-Process $OutFile -ArgumentList $UnattendedArgs -Wait -Passthru | Out-Null
             Start-Sleep -Seconds 1 
         }
     }
+    #, @{
+    #    Name     = 'Java8NoUpdate'
+    #    Describe = 'Disable Java 8 JRE Auto Update'
+    #    Test     = { }
+    #    Set      = { }
+    #}
 )
 
 #
