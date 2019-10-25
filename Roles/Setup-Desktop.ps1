@@ -206,9 +206,9 @@ $BaseDesktopRequirements = @(
         Name     = 'VS2019x64'
         Describe = 'Microsoft Visual C++ 2019 x64 Runtime is installed - same distributable as 2015 and 2017'
         Test     = { $false -or (Get-InstalledSoftware -Name 'Microsoft Visual C++ 2019 X64*') } 
-        set      = {
+        Set      = {
             $URI = "https://aka.ms/vs/16/release/vc_redist.x64.exe"
-            $Outfile = Join-Path "$env:SystemRoot\Temp" -ChildPath "vcredist-2013-x64.exe"
+            $Outfile = Join-Path "$env:SystemRoot\Temp" -ChildPath "vcredist-2019-x64.exe"
             $UnattendedArgs = "/quiet /norestart"
             
             Invoke-WebRequest -Uri $URI -OutFile $OutFile -UseBasicParsing
