@@ -9,7 +9,7 @@
 
 # Here are the mandatory settings enforced by this script
 # 1 - Sets Timezone to EST
-# 2 - Installs .NET 3.5
+# 2 - Installs .NET 3.5, 4.7.2 
 # 3 - Installs Visual C++ Runtimes
 # 4 - Installs LAPS
 # 5 - Confirms Security Baseline (lots to do here)
@@ -116,7 +116,9 @@ function Get-InstalledSoftware {
     }
 }
 
-
+#
+#   Here I just define things I like to see on my workstation.  They almost always get installed or set. 
+#
 $BaseDesktopRequirements = @(
     @{
         Name     = 'Timezone-EST'
@@ -158,7 +160,8 @@ $BaseDesktopRequirements = @(
             Start-Sleep -Seconds 1
         }
     }
-    , @{ Name    = 'VS2010x64'
+    , @{ 
+        Name     = 'VS2010x64'
         Describe = 'Microsoft Visual C++ 2010 x64 Runtime is installed'
         Test     = { $false -or (Get-InstalledSoftware -Name 'Microsoft Visual C++ 2010*') } 
         Set      = {
@@ -171,7 +174,8 @@ $BaseDesktopRequirements = @(
             Start-Sleep -Seconds 1
         }
     }
-    , @{ Name    = 'VS2012x64'
+    , @{ 
+        Name     = 'VS2012x64'
         Describe = 'Microsoft Visual C++ 2012 x64 Runtime is installed'
         Test     = { $false -or (Get-InstalledSoftware -Name 'Microsoft Visual C++ 2012*') } 
         Set      = {
@@ -184,7 +188,8 @@ $BaseDesktopRequirements = @(
             Start-Sleep -Seconds 1
         }
     }
-    , @{ Name    = 'VS2013x64'
+    , @{ 
+        Name     = 'VS2013x64'
         Describe = 'Microsoft Visual C++ 2013 x64 Runtime is installed'
         Test     = { $false -or (Get-InstalledSoftware -Name 'Microsoft Visual C++ 2013*') } 
         Set      = {
@@ -212,8 +217,9 @@ $BaseDesktopRequirements = @(
         }
     }
     #
-    #   Power Settings
+    #   Power Settings.  
     #
+    # TODO: Turn off network interface power settings, etc. 
     , @{
         Name     = 'HighPerfPower'
         Describe = 'High Performance Power Plan selected'
@@ -255,6 +261,9 @@ $BaseDesktopRequirements = @(
     }
 )
 
+#
+#   These are the things I do with Adobe Reader.  
+#
 $AdobeReaderRequirements = @(
     @{
         Name     = 'AdobeAcrobatReaderDC'
@@ -333,6 +342,10 @@ $AdobeReaderRequirements = @(
     }
 )
 
+#
+# Installs Chrome and Mozilla
+#
+# TODO: Install the browser plugins I use, set Mozilla to trust internal certificate store, etc. 
 $AlternateBrowserRequirements = @(
     @{
         Name     = 'GoogleChrome'
@@ -370,12 +383,15 @@ $AlternateBrowserRequirements = @(
             Start-Sleep -Seconds 1 
         }
     }
-    , @{
-        Name     = 'MozillaAcceptCerts'
-        Describe = 'Set firefox to trust the local windows certificate store'
-    }
+    #    , @{
+    #        Name     = 'MozillaAcceptCerts'
+    #        Describe = 'Set firefox to trust the local windows certificate store'
+    #    }
 )
 
+#
+#   Install Citrix Workspace App the way I usually do. 
+#
 $CitrixRequirements = @(
     #
     #   Citrix 
@@ -417,6 +433,10 @@ $CitrixRequirements = @(
     
 )
 
+#
+#   Install VLC
+#
+# TODO: File association
 $MediaPlayerRequirements = @(
     @{
         Name     = 'VLC'
@@ -445,7 +465,9 @@ $MediaPlayerRequirements = @(
     }
 )
 
-
+#
+#   Install Webex Teams and Webex Meetings.
+#
 $WebexRequirements = @(
     @{
         Name     = 'WebexTeams'
@@ -487,6 +509,9 @@ $MicrosoftOfficeRequirements = @(
     }
 )
 
+#
+#   Install Java8, haven't tested fully.  I was happy to be rid of java. 
+#
 $Java8Requirements = @(
     @{
         Name     = 'Java8'
@@ -504,6 +529,9 @@ $Java8Requirements = @(
     }
 )
 
+#
+#   Install the things I use on my Admin desktop. 
+#
 $AdminDesktopRequirements = @(
     # Notepad++, Git, SSMS, 7zip
     @{
@@ -557,7 +585,7 @@ $AdminDesktopRequirements = @(
         Test      = { 
             #    $CurrentVersion = (Get-MicrosoftSsms).Version
             #    (Get-InstalledSoftware -Name 'Microsoft SQL Server Management Studio*').Version -eq $CurrentVersion
-            # This is currently commented out, because I haven't gotten upgrades working
+            # This is currently commented out, because I haven't gotten upgrades working consistently
             $false -or (Get-InstalledSoftware -Name 'Microsoft SQL Server Management Studio*')
         }
         Set       = { 
@@ -655,6 +683,9 @@ $AdminDesktopRequirements = @(
     }
 )
 
+#
+#   You probably don't want this, but I do have to manage some legacy systems. 
+#
 $EnableSMB1Requirements = @(
     @{
         Name     = 'EnableSMB1'
@@ -679,6 +710,11 @@ $DisableSMB1Requirements = @(
     }
 )
 
+
+#
+#   Here's the really easy to read section, this just adds hashes to the big array
+#   Will play with sourcing from other files later, which will make maintenance easier. 
+#
 
 # Very Common
 if ($AdobeReader) { $BaseDesktopRequirements += $AdobeReaderRequirements }
